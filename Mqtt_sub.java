@@ -11,6 +11,11 @@ public class Mqtt_sub {
 	private static String topic;
 	private final static String BROKER_URI = "tcp://localhost:1883";
 	private static MqttClient mqttClient;
+	private static MqttMessage messageMQTT;
+	
+	public MqttMessage getMessageMQTT(){
+		return messageMQTT;
+	}
 		
 	public static String getTopic() {
 		return topic;
@@ -30,7 +35,7 @@ public class Mqtt_sub {
 
 	public static void main(String[] args)throws MqttSecurityException, MqttException {
 		mqttClient = new MqttClient(BROKER_URI,	MqttClient.generateClientId());
-		
+		topic = "temp";
 		mqttClient.setCallback(new MqttCallback() {
 
 			@Override
@@ -38,7 +43,8 @@ public class Mqtt_sub {
 
 				//TODO affichez les messages disponibles sur un topic
 				try {
-					color =Integer.parseInt(message.toString());
+//					color = Integer.parseInt(message.toString());
+					messageMQTT = message;
 					System.out.println("Message arrived : \"" + message.toString() + "\" on topic \""+ topic +"\"" );
 				}
 				catch (Exception e){
@@ -69,6 +75,6 @@ public class Mqtt_sub {
 		
 		mqttClient.connect();
 		//TODO souscrivez au topic
-		mqttClient.subscribe("temp");
+		mqttClient.subscribe(topic);
 	}
 }
