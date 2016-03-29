@@ -31,15 +31,15 @@ import java.util.List;
  * @author moh
  */
 public class PhilipsHue {       
-    private PHHueSDK phHueSDK = PHHueSDK.create();
-    private PHHueSDK phHueSDKM = PHHueSDK.create();
+    private PHHueSDK phHueSDK ;    
     private PHBridge bridge;        
     private String IpAdresse;
     private String UserName ; 
-    private String FileName = "LastKnownIP" ; 
-    private boolean  connected = false;
-    private PHAccessPoint accessP = new PHAccessPoint() ;
-    
+    private String FileName  ; 
+    private boolean  connected ;
+    private PHAccessPoint accessP ;            
+    private PHSDKListener listener ;
+
     public void wirteInFile(String[] str , int size) throws IOException{
         PrintWriter pr = new PrintWriter(new FileWriter(FileName));
         for (int i = 0; i < size; i++) {
@@ -48,63 +48,6 @@ public class PhilipsHue {
         pr.close();
     }
     
-    private PHSDKListener listener = new PHSDKListener() {                        
-        @Override
-        public void onAccessPointsFound(List accessPoint) {            
-            PHHueSDK phHueSDK = PHHueSDK.create();
-            phHueSDK.connect((PHAccessPoint) accessPoint.get(0));
-        }
-        
-        @Override
-        public void onCacheUpdated(List cacheNotificationsList, PHBridge bridge) {                         
-            if (cacheNotificationsList.contains(PHMessageType.LIGHTS_CACHE_UPDATED)) {
-               System.out.println("Lights Cache Updated ");
-            }
-        }
-
-        @Override
-        public void onBridgeConnected(PHBridge b, String username) {                                    
-            System.out.println("connect !!");
-            bridge = b ;             
-            connected = true;            
-            try {
-                PrintWriter pr = new PrintWriter(new FileWriter(FileName));                
-                pr.println(b.getResourceCache().getBridgeConfiguration().getIpAddress());                
-                pr.println(b.getResourceCache().getBridgeConfiguration().getUsername());                
-                pr.close();
-            }
-            catch(Exception e){
-                e.printStackTrace();                
-            }
-                    
-        }
-
-        @Override
-        public void onAuthenticationRequired(PHAccessPoint accessPoint) {            
-            phHueSDK.startPushlinkAuthentication(accessPoint);            
-        }
-
-        @Override
-        public void onConnectionResumed(PHBridge bridge) {
-
-        }
-
-        @Override
-        public void onConnectionLost(PHAccessPoint accessPoint) {
-            System.out.println("------lost------------");            
-        }
-        
-        @Override
-        public void onError(int code, final String message) {
-            System.out.println("err  "+message);            
-        }
-
-        @Override
-        public void onParsingErrors(List parsingErrorsList) {
-
-        }
-    };         
-
     public void setHue(int Hue,int LampNumber){
         phHueSDK.setSelectedBridge(bridge);
         phHueSDK.enableHeartbeat(bridge, PHHueSDK.HB_INTERVAL);                                
@@ -239,6 +182,66 @@ public class PhilipsHue {
     }
 
     public PhilipsHue() {
+        phHueSDK = PHHueSDK.create();
+        FileName = "LastKnownIP";
+        connected = false ; 
+        accessP = new PHAccessPoint();
+        listener = new PHSDKListener() {                        
+        @Override
+        public void onAccessPointsFound(List accessPoint) {            
+            PHHueSDK phHueSDK = PHHueSDK.create();
+            phHueSDK.connect((PHAccessPoint) accessPoint.get(0));
+        }
+        
+        @Override
+        public void onCacheUpdated(List cacheNotificationsList, PHBridge bridge) {                         
+            if (cacheNotificationsList.contains(PHMessageType.LIGHTS_CACHE_UPDATED)) {
+               System.out.println("Lights Cache Updated ");
+            }
+        }
+
+        @Override
+        public void onBridgeConnected(PHBridge b, String username) {                                    
+            System.out.println("connect !!");
+            bridge = b ;             
+            connected = true;            
+            try {
+                PrintWriter pr = new PrintWriter(new FileWriter(FileName));                
+                pr.println(b.getResourceCache().getBridgeConfiguration().getIpAddress());                
+                pr.println(b.getResourceCache().getBridgeConfiguration().getUsername());                
+                pr.close();
+            }
+            catch(Exception e){
+                e.printStackTrace();                
+            }
+                    
+        }
+
+        @Override
+        public void onAuthenticationRequired(PHAccessPoint accessPoint) {            
+            phHueSDK.startPushlinkAuthentication(accessPoint);            
+        }
+
+        @Override
+        public void onConnectionResumed(PHBridge bridge) {
+
+        }
+
+        @Override
+        public void onConnectionLost(PHAccessPoint accessPoint) {
+            System.out.println("------lost------------");            
+        }
+        
+        @Override
+        public void onError(int code, final String message) {
+            System.out.println("err  "+message);            
+        }
+
+        @Override
+        public void onParsingErrors(List parsingErrorsList) {
+
+        }
+    };                                                
         try{
             getIpFromFile();
         }
