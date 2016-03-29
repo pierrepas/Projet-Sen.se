@@ -16,6 +16,13 @@ import com.philips.lighting.hue.sdk.PHMessageType;
 import com.philips.lighting.hue.sdk.PHSDKListener;
 import com.philips.lighting.model.PHBridge;
 import com.philips.lighting.model.PHLightState;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.List;
 
 
@@ -29,7 +36,18 @@ public class PhilipsHue {
     private PHBridge bridge;        
     private String IpAdresse;
     private String UserName ; 
+    private String FileName = "LastKnownIP" ; 
+    private boolean  connected = false;
     private PHAccessPoint accessP = new PHAccessPoint() ;
+    
+    public void wirteInFile(String[] str , int size) throws IOException{
+        PrintWriter pr = new PrintWriter(new FileWriter(FileName));
+        for (int i = 0; i < size; i++) {
+            pr.println(str[i]);
+        }
+        pr.close();
+    }
+    
     private PHSDKListener listener = new PHSDKListener() {                        
         @Override
         public void onAccessPointsFound(List accessPoint) {            
@@ -48,6 +66,17 @@ public class PhilipsHue {
         public void onBridgeConnected(PHBridge b, String username) {                                    
             System.out.println("connect !!");
             bridge = b ;             
+            connected = true;            
+            try {
+                PrintWriter pr = new PrintWriter(new FileWriter(FileName));                
+                pr.println(b.getResourceCache().getBridgeConfiguration().getIpAddress());                
+                pr.println(b.getResourceCache().getBridgeConfiguration().getUsername());                
+                pr.close();
+            }
+            catch(Exception e){
+                e.printStackTrace();                
+            }
+                    
         }
 
         @Override
@@ -118,13 +147,49 @@ public class PhilipsHue {
         }
     }
     
-    public void setHue(int Hue,String IpAdresse,String UserName){
-        accessP.setBridgeId(IpAdresse);
+    public void setHue(int Hue,String IpAdresse,String UserName) throws InterruptedException{
+        accessP.setIpAddress(IpAdresse);
         accessP.setUsername(UserName);
-        phHueSDKM.connect(accessP);
+        try{
+        while(!phHueSDK.isAccessPointConnected(accessP)){
+            Thread.sleep(500);
+            phHueSDK.connect(accessP);   
+        }
+        }
+        catch(Exception e) {
         PHLightState lightState = new PHLightState();
         lightState.setHue(Hue);         
-        phHueSDKM.setCurrentLightState(lightState);        
+        
+        PHBridge b = phHueSDK.getAllBridges().get(0);
+        for (int i = 0; i < 3; i++) {
+                b.updateLightState(b.getResourceCache().getAllLights().get(i), lightState);
+            }
+        }
+    }
+    
+    
+    public void getIpFromFile() throws FileNotFoundException, IOException{        
+        File file = new File(FileName);
+        BufferedReader br = new BufferedReader(new FileReader(file));        
+        IpAdresse=br.readLine();        
+        UserName=br.readLine();                
+        br.close();
+    }
+    
+    public void connectToLastKnownIP() throws IOException{
+        getIpFromFile();
+        accessP.setIpAddress(IpAdresse);
+        accessP.setUsername(UserName);
+        try{
+        while(!phHueSDK.isAccessPointConnected(accessP)){
+            Thread.sleep(500);
+            phHueSDK.connect(accessP);   
+        }
+        }
+        catch(Exception e) {                        
+        bridge = phHueSDK.getAllBridges().get(0);
+        connected = true ;
+        }
     }
     
     public void searchBridge(){
@@ -132,6 +197,57 @@ public class PhilipsHue {
         PHBridgeSearchManager sm = (PHBridgeSearchManager) phHueSDK.getSDKService(PHHueSDK.SEARCH_BRIDGE);
         sm.search(true, true);  
     }
+
+    public PHBridge getBridge() {
+        return bridge;
+    }
+
+    public String getIpAdresse() {
+        return IpAdresse;
+    }
+
+    public String getUserName() {
+        return UserName;
+    }
+
+    public void setBridge(PHBridge bridge) {
+        this.bridge = bridge;
+    }
+
+    public void setIpAdresse(String IpAdresse) {
+        this.IpAdresse = IpAdresse;
+    }
+
+    public void setUserName(String UserName) {
+        this.UserName = UserName;
+    }
+    
+    public boolean isConnected(){
+        return connected ;
+    }
+
+    public void setFileName(String FileName) {
+        this.FileName = FileName;
+    }
+
+    public void setConnected(boolean connected) {
+        this.connected = connected;
+    }
+
+    public String getFileName() {
+        return FileName;
+    }
+
+    public PhilipsHue() {
+        try{
+            getIpFromFile();
+        }
+        catch(Exception e){
+            System.out.println("file doesn't exist");
+            e.printStackTrace();
+        }
+    }
+    
 }
    
 
