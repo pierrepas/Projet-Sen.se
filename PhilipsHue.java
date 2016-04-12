@@ -16,6 +16,7 @@ import com.philips.lighting.hue.sdk.PHMessageType;
 import com.philips.lighting.hue.sdk.PHSDKListener;
 import com.philips.lighting.model.PHBridge;
 import com.philips.lighting.model.PHLightState;
+import java.awt.Color;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -250,6 +251,79 @@ public class PhilipsHue {
             e.printStackTrace();
         }
     }
+public  double[] getRGBtoXY(Color c) {
+        // For the hue bulb the corners of the triangle are:
+        // -Red: 0.675, 0.322
+        // -Green: 0.4091, 0.518
+        // -Blue: 0.167, 0.04
+        double[] normalizedToOne = new double[3];
+        float cred, cgreen, cblue;
+        cred = c.getRed();
+        cgreen = c.getGreen();
+        cblue = c.getBlue();
+        normalizedToOne[0] = (cred / 255);
+        normalizedToOne[1] = (cgreen / 255);
+        normalizedToOne[2] = (cblue / 255);
+        float red, green, blue;
+
+        // Make red more vivid
+        if (normalizedToOne[0] > 0.04045) {
+            red = (float) Math.pow(
+                    (normalizedToOne[0] + 0.055) / (1.0 + 0.055), 2.4);
+        } else {
+            red = (float) (normalizedToOne[0] / 12.92);
+        }
+
+        // Make green more vivid
+        if (normalizedToOne[1] > 0.04045) {
+            green = (float) Math.pow((normalizedToOne[1] + 0.055)
+                    / (1.0 + 0.055), 2.4);
+        } else {
+            green = (float) (normalizedToOne[1] / 12.92);
+        }
+
+        // Make blue more vivid
+        if (normalizedToOne[2] > 0.04045) {
+            blue = (float) Math.pow((normalizedToOne[2] + 0.055)
+                    / (1.0 + 0.055), 2.4);
+        } else {
+            blue = (float) (normalizedToOne[2] / 12.92);
+        }
+
+        float X = (float) (red * 0.649926 + green * 0.103455 + blue * 0.197109);
+        float Y = (float) (red * 0.234327 + green * 0.743075 + blue * 0.022598);
+        float Z = (float) (red * 0.0000000 + green * 0.053077 + blue * 1.035763);
+
+        float x = X / (X + Y + Z);
+        float y = Y / (X + Y + Z);
+
+        double[] xy = new double[2];
+        xy[0] = x;
+        xy[1] = y;
+        
+        return xy;
+    }
+
+    public void setRGB(Color c , int LampNumber){
+        double[] xy  = getRGBtoXY(c);
+        setXY((float)xy[0], (float)xy[1], LampNumber);
+    }
+    
+    public void setXY(float x,float y , int LampNumber){
+        phHueSDK.setSelectedBridge(bridge);
+        phHueSDK.enableHeartbeat(bridge, PHHueSDK.HB_INTERVAL);                                
+        PHLightState lightState = new PHLightState();
+        lightState.setY(y);                                  
+        lightState.setX(x);
+        if(LampNumber!=-1)
+        bridge.updateLightState(bridge.getResourceCache().getAllLights().get(LampNumber), lightState);
+        else {
+            for (int i = 0; i < 3; i++) {
+                bridge.updateLightState(bridge.getResourceCache().getAllLights().get(i), lightState);
+            }
+        }
+    }
+    
     
 }
    
