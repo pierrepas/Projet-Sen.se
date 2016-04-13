@@ -1,5 +1,6 @@
 import paho.mqtt.client as mqtt
 import sense
+import time
 
 
 # The callback for when the client receives a CONNACK response from the server.
@@ -17,12 +18,10 @@ def on_message(client, userdata, msg):
 # notre mother sense
 sense.api_key = '4a5f9881e53ba0a3cf237fa1c20737a0dbfe5e99'
 
-# cookie correspondant a la temperature
-feed = sense.Feed.retrieve('txArRCgqmNcXPVE3a1GGrurbZjlHfCGA')
+
 # print feed.events.list()
 
-#derniere temperature mise à jour
-temperature = str(feed.events.list(limit=1).objects[0].data.centidegreeCelsius)
+
 
 
 # initialisation du client mqtt
@@ -31,12 +30,18 @@ client.on_connect = on_connect
 client.on_message = on_message
 
 client.connect("localhost", 1883, 60)
-client.publish("lampe","34567")
-client.publish("lampe",temperature)
+client.loop_start()
+
+while True :
+	
+	# cookie correspondant a la temperature
+	feed = sense.Feed.retrieve('txArRCgqmNcXPVE3a1GGrurbZjlHfCGA')
+	
+	# recuperation de la derniere temperature mise a jour
+	temperature = str(feed.events.list(limit=1).objects[0].data.centidegreeCelsius)
+	client.publish("lampe",temperature)
+	
+	# attendre 
+	time.sleep(10)
 
 
-# Blocking call that processes network traffic, dispatches callbacks and
-# handles reconnecting.
-# Other loop*() functions are available that give a threaded interface and a
-# manual interface.
-client.loop_forever()
