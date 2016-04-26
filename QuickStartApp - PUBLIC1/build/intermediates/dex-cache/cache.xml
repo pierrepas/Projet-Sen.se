@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<items version="2" >
+
+    <item
+        jar="/home/fredo/AndroidStudioProjects/QuickStartApp - PUBLIC1/app/build/intermediates/incremental-classes/debug/instant-run-bootstrap.jar"
+        jumboMode="true"
+        revision="23.0.3"
+        sha1="ffc3a48132570ca434e2c45273ab5357e859bd04">
+        <dex dex="/home/fredo/AndroidStudioProjects/QuickStartApp - PUBLIC1/app/build/intermediates/transforms/dex/debug/folders/1000/10/instant-run-bootstrap_6576eaaa733c075d7078daaebab90f8cf8a6dc7e/classes.dex" />
+    </item>
+
+</items>

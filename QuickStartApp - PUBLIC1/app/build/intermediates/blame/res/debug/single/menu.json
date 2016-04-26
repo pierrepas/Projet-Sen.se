@@ -1,0 +1,18 @@
+[
+    {
+        "merged": "/home/fredo/AndroidStudioProjects/QuickStartApp - PUBLIC1/app/build/intermediates/res/merged/debug/menu/global.xml",
+        "source": "/home/fredo/AndroidStudioProjects/QuickStartApp - PUBLIC1/app/src/main/res/menu/global.xml"
+    },
+    {
+        "merged": "/home/fredo/AndroidStudioProjects/QuickStartApp - PUBLIC1/app/build/intermediates/res/merged/debug/menu/main2.xml",
+        "source": "/home/fredo/AndroidStudioProjects/QuickStartApp - PUBLIC1/app/src/main/res/menu/main2.xml"
+    },
+    {
+        "merged": "/home/fredo/AndroidStudioProjects/QuickStartApp - PUBLIC1/app/build/intermediates/res/merged/debug/menu/home.xml",
+        "source": "/home/fredo/AndroidStudioProjects/QuickStartApp - PUBLIC1/app/src/main/res/menu/home.xml"
+    },
+    {
+        "merged": "/home/fredo/AndroidStudioProjects/QuickStartApp - PUBLIC1/app/build/intermediates/res/merged/debug/menu/bridgelist.xml",
+        "source": "/home/fredo/AndroidStudioProjects/QuickStartApp - PUBLIC1/app/src/main/res/menu/bridgelist.xml"
+    }
+]

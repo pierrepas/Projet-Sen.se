@@ -1,0 +1,18 @@
+[
+    {
+        "merged": "/home/fredo/AndroidStudioProjects/QuickStartApp - PUBLIC1/app/build/intermediates/res/merged/debug/drawable-hdpi-v4/ic_drawer.png",
+        "source": "/home/fredo/AndroidStudioProjects/QuickStartApp - PUBLIC1/app/src/main/res/drawable-hdpi/ic_drawer.png"
+    },
+    {
+        "merged": "/home/fredo/AndroidStudioProjects/QuickStartApp - PUBLIC1/app/build/intermediates/res/merged/debug/drawable-hdpi-v4/ic_launcher.png",
+        "source": "/home/fredo/AndroidStudioProjects/QuickStartApp - PUBLIC1/app/src/main/res/drawable-hdpi/ic_launcher.png"
+    },
+    {
+        "merged": "/home/fredo/AndroidStudioProjects/QuickStartApp - PUBLIC1/app/build/intermediates/res/merged/debug/drawable-hdpi-v4/press_smartbridge.xml",
+        "source": "/home/fredo/AndroidStudioProjects/QuickStartApp - PUBLIC1/app/src/main/res/drawable-hdpi/press_smartbridge.xml"
+    },
+    {
+        "merged": "/home/fredo/AndroidStudioProjects/QuickStartApp - PUBLIC1/app/build/intermediates/res/merged/debug/drawable-hdpi-v4/drawer_shadow.9.png",
+        "source": "/home/fredo/AndroidStudioProjects/QuickStartApp - PUBLIC1/app/src/main/res/drawable-hdpi/drawer_shadow.9.png"
+    }
+]
