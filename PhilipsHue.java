@@ -3,8 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package sen.se;
-
+package philips.hue;
 /**
  *
  * @author moh
@@ -27,11 +26,42 @@ import java.io.PrintWriter;
 import java.util.List;
 
 
-/**
- *
- * @author moh
+/** @author 
+ *Hassainia Mohamed
+ * Souissi Oussama
+ * Jommetti Leevan
+ * Vouillamoz Fred
+ * Ouali-Alami Mohamed
+ * Pasquier Pierre
+ * Petre Rémy
+ * Charbonnier Jonathan
+ * Priscoglio Florent
+ * Ziadeh Mohamad
  */
-public class PhilipsHue {       
+
+/**
+ * API Permettant de commander une ou plusieurs lampe à l'aide du protocole mqtt et du serveur mosquitto.
+ * API fournissant les fonctionnalités suivantes:
+ * setHue permet de changer la couleur d'une ou plusieurs lampe(s)
+ * setBrightness permet de changer la luminosité d'une ou plusieurs lampe(s)
+ * setBrightnessAndColor permet de changer la luminosité et la couleur d'une ou plusieurs lampe(s)
+ * 
+ * API écrite à partir de l'API Philips Hue fournie sur le site http://www.developers.meethue.com/philips-hue-api .
+*/
+
+
+
+public class PhilipsHue {
+    /**
+     * phHueSDK : bibliothèque Phillips Hue
+     * bridge : représente le boitier 
+     * IpAdresse : adresse ip du boitier
+     * UserName : nom de l'utilisateur
+     * FileName : nom du fichier qui contient les dernières adresses ip enregistrées 
+     * connected : True si on est connecté au bridge, False sinon
+     * accessP : Point d'accès 
+     * listener : cherche les boitiers dans le réseau 
+    */
     private PHHueSDK phHueSDK ;    
     private PHBridge bridge;        
     private String IpAdresse;
@@ -41,77 +71,71 @@ public class PhilipsHue {
     private PHAccessPoint accessP ;            
     private PHSDKListener listener ;
 
-    public void wirteInFile(String[] str , int size) throws IOException{
-        PrintWriter pr = new PrintWriter(new FileWriter(FileName));
-        for (int i = 0; i < size; i++) {
-            pr.println(str[i]);
+    /**
+     * Ecrit chaque élément du tableau sur une ligne du fichier
+     * @param str : tableau de chaînes de caractères à écrire dans le fichier
+     * @param size : taille du tableau
+     * @throws IOException
+     */
+    
+
+    public void writeInFile(String[] str , int size) throws IOException{
+        try (PrintWriter pr = new PrintWriter(new FileWriter(FileName))) {
+            for (int i = 0; i < size; i++) {
+                pr.println(str[i]);
+            }
         }
-        pr.close();
     }
     
+    /**
+     * Change la couleur de la lampe numéro LampNumber
+     * @param Hue : couleur à attribuer à la lampe
+     * @param LampNumber : numéro de la lampe
+     */
     public void setHue(int Hue,int LampNumber){
         phHueSDK.setSelectedBridge(bridge);
         phHueSDK.enableHeartbeat(bridge, PHHueSDK.HB_INTERVAL);                                
         PHLightState lightState = new PHLightState();
         lightState.setHue(Hue);                                  
-        if(LampNumber!=-1)
         bridge.updateLightState(bridge.getResourceCache().getAllLights().get(LampNumber), lightState);
-        else {
-            for (int i = 0; i < 3; i++) {
-                bridge.updateLightState(bridge.getResourceCache().getAllLights().get(i), lightState);
-            }
-        }
     }
+
+    /**
+     * Modifie la luminosité de la lampe
+     * @param Brightness : 
+     * @param LampNumber
+     */
     public void setBrightness(int Brightness,int LampNumber){
         phHueSDK.setSelectedBridge(bridge);
         phHueSDK.enableHeartbeat(bridge, PHHueSDK.HB_INTERVAL);                                
         PHLightState lightState = new PHLightState();
         lightState.setBrightness(Brightness);                                  
-        if(LampNumber!=-1)
         bridge.updateLightState(bridge.getResourceCache().getAllLights().get(LampNumber), lightState);
-        else {
-            for (int i = 0; i < 3; i++) {
-                bridge.updateLightState(bridge.getResourceCache().getAllLights().get(i), lightState);
-            }
-        }
     }
     
-    public void setBrightnessNHue(int Hue,int Brightness,int LampNumber){
+    /**
+     *
+     * @param Hue
+     * @param Brightness
+     * @param LampNumber
+     */
+    public void setBrightnessAndColor(int Hue,int Brightness,int LampNumber){
         phHueSDK.setSelectedBridge(bridge);
         phHueSDK.enableHeartbeat(bridge, PHHueSDK.HB_INTERVAL);                                
         PHLightState lightState = new PHLightState();
         lightState.setHue(Hue);                                  
         lightState.setBrightness(Brightness);               
-        if(LampNumber!=-1)
-        bridge.updateLightState(bridge.getResourceCache().getAllLights().get(LampNumber), lightState);
-        else {
-            for (int i = 0; i < 3; i++) {
-                bridge.updateLightState(bridge.getResourceCache().getAllLights().get(i), lightState);
-            }
-        }
-    }
-    
-    public void setHue(int Hue,String IpAdresse,String UserName) throws InterruptedException{
-        accessP.setIpAddress(IpAdresse);
-        accessP.setUsername(UserName);
-        try{
-        while(!phHueSDK.isAccessPointConnected(accessP)){
-            Thread.sleep(500);
-            phHueSDK.connect(accessP);   
-        }
-        }
-        catch(Exception e) {
-        PHLightState lightState = new PHLightState();
-        lightState.setHue(Hue);         
-        
-        PHBridge b = phHueSDK.getAllBridges().get(0);
-        for (int i = 0; i < 3; i++) {
-                b.updateLightState(b.getResourceCache().getAllLights().get(i), lightState);
-            }
-        }
+        bridge.updateLightState(bridge.getResourceCache().getAllLights().get(LampNumber), lightState);        
     }
     
     
+   
+    
+    /**
+     *
+     * @throws FileNotFoundException
+     * @throws IOException
+     */
     public void getIpFromFile() throws FileNotFoundException, IOException{        
         File file = new File(FileName);
         BufferedReader br = new BufferedReader(new FileReader(file));        
@@ -120,6 +144,10 @@ public class PhilipsHue {
         br.close();
     }
     
+    /**
+     *
+     * @throws IOException
+     */
     public void connectToLastKnownIP() throws IOException{
         getIpFromFile();
         accessP.setIpAddress(IpAdresse);
@@ -136,52 +164,99 @@ public class PhilipsHue {
         }
     }
     
+    /**
+     *
+     */
     public void searchBridge(){
         phHueSDK.getNotificationManager().registerSDKListener(listener);
         PHBridgeSearchManager sm = (PHBridgeSearchManager) phHueSDK.getSDKService(PHHueSDK.SEARCH_BRIDGE);
-        sm.search(true, true);  
+        //sm.search(true, true);
+        sm.ipAddressSearch();  
     }
 
+    /**
+     *
+     * @return
+     */
     public PHBridge getBridge() {
         return bridge;
     }
 
+    /**
+     *
+     * @return
+     */
     public String getIpAdresse() {
         return IpAdresse;
     }
 
+    /**
+     *
+     * @return
+     */
     public String getUserName() {
         return UserName;
     }
 
+    /**
+     *
+     * @param bridge
+     */
     public void setBridge(PHBridge bridge) {
         this.bridge = bridge;
     }
 
+    /**
+     *
+     * @param IpAdresse
+     */
     public void setIpAdresse(String IpAdresse) {
         this.IpAdresse = IpAdresse;
     }
 
+    /**
+     *
+     * @param UserName
+     */
     public void setUserName(String UserName) {
         this.UserName = UserName;
     }
     
+    /**
+     *
+     * @return
+     */
     public boolean isConnected(){
         return connected ;
     }
 
+    /**
+     *
+     * @param FileName
+     */
     public void setFileName(String FileName) {
         this.FileName = FileName;
     }
 
+    /**
+     *
+     * @param connected
+     */
     public void setConnected(boolean connected) {
         this.connected = connected;
     }
 
+    /**
+     *
+     * @return
+     */
     public String getFileName() {
         return FileName;
     }
 
+    /**
+     *
+     */
     public PhilipsHue() {
         phHueSDK = PHHueSDK.create();
         FileName = "LastKnownIP";
@@ -251,7 +326,13 @@ public class PhilipsHue {
             e.printStackTrace();
         }
     }
-public  double[] getRGBtoXY(Color c) {
+
+    /**
+     *
+     * @param c
+     * @return
+     */
+    public  double[] getRGBtoXY(Color c) {
         // For the hue bulb the corners of the triangle are:
         // -Red: 0.675, 0.322
         // -Green: 0.4091, 0.518
@@ -304,30 +385,31 @@ public  double[] getRGBtoXY(Color c) {
         return xy;
     }
 
+    /**
+     *
+     * @param c
+     * @param LampNumber
+     */
     public void setRGB(Color c , int LampNumber){
         double[] xy  = getRGBtoXY(c);
         setXY((float)xy[0], (float)xy[1], LampNumber);
     }
     
+    /**
+     *
+     * @param x
+     * @param y
+     * @param LampNumber
+     */
     public void setXY(float x,float y , int LampNumber){
         phHueSDK.setSelectedBridge(bridge);
         phHueSDK.enableHeartbeat(bridge, PHHueSDK.HB_INTERVAL);                                
         PHLightState lightState = new PHLightState();
         lightState.setY(y);                                  
         lightState.setX(x);
-        if(LampNumber!=-1)
         bridge.updateLightState(bridge.getResourceCache().getAllLights().get(LampNumber), lightState);
-        else {
-            for (int i = 0; i < 3; i++) {
-                bridge.updateLightState(bridge.getResourceCache().getAllLights().get(i), lightState);
-            }
-        }
     }
     
     
 }
-   
-
-
-
-
+  
