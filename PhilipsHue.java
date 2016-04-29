@@ -27,7 +27,7 @@ import java.util.List;
 
 
 /** @author 
- *Hassainia Mohamed
+ * Hassainia Mohamed
  * Souissi Oussama
  * Jommetti Leevan
  * Vouillamoz Fred
@@ -40,7 +40,7 @@ import java.util.List;
  */
 
 /**
- * API Permettant de commander une ou plusieurs lampe à l'aide du protocole mqtt et du serveur mosquitto.
+ * API Permettant de commander une ou plusieurs lampe(s) à l'aide du protocole mqtt et du serveur mosquitto.
  * API fournissant les fonctionnalités suivantes:
  * setHue permet de changer la couleur d'une ou plusieurs lampe(s)
  * setBrightness permet de changer la luminosité d'une ou plusieurs lampe(s)
@@ -61,6 +61,7 @@ public class PhilipsHue {
      * connected : True si on est connecté au bridge, False sinon
      * accessP : Point d'accès 
      * listener : cherche les boitiers dans le réseau 
+     * BridgeNumber :  
     */
     private PHHueSDK phHueSDK ;    
     private PHBridge bridge;        
@@ -70,6 +71,7 @@ public class PhilipsHue {
     private boolean  connected ;
     private PHAccessPoint accessP ;            
     private PHSDKListener listener ;
+    private int BridgeNumber;
 
     /**
      * Ecrit chaque élément du tableau sur une ligne du fichier
@@ -89,7 +91,7 @@ public class PhilipsHue {
     
     /**
      * Change la couleur de la lampe numéro LampNumber
-     * @param Hue : couleur à attribuer à la lampe
+     * @param Hue : couleur à attribuer à la lampe de 0 à 65536 
      * @param LampNumber : numéro de la lampe
      */
     public void setHue(int Hue,int LampNumber){
@@ -101,9 +103,9 @@ public class PhilipsHue {
     }
 
     /**
-     * Modifie la luminosité de la lampe
-     * @param Brightness : 
-     * @param LampNumber
+     * Modifie la luminosité de la lampe 
+     * @param Brightness : intensité de la luminosité entre 0 et 255 ?
+     * @param LampNumber numéro de la lampe
      */
     public void setBrightness(int Brightness,int LampNumber){
         phHueSDK.setSelectedBridge(bridge);
@@ -114,10 +116,10 @@ public class PhilipsHue {
     }
     
     /**
-     *
-     * @param Hue
-     * @param Brightness
-     * @param LampNumber
+     * Modifie la luminosité ainsi que la couleur de la lampe
+     * @param Hue : couleur à attribuer à la lampe de 0 à 65536
+     * @param Brightness : intensité de la luminosité entre 0 et 255 ?
+     * @param LampNumber numéro de la lampe
      */
     public void setBrightnessAndColor(int Hue,int Brightness,int LampNumber){
         phHueSDK.setSelectedBridge(bridge);
@@ -132,29 +134,55 @@ public class PhilipsHue {
    
     
     /**
-     *
+     * Récupère l'adresse ip et le nom d'utilisateur du pont enregistrés dans un fichier
+     * @return false s'il y a des erreurs et  true sinon
      * @throws FileNotFoundException
      * @throws IOException
      */
-    public void getIpFromFile() throws FileNotFoundException, IOException{        
+    public boolean getIpUserFromFile() throws FileNotFoundException, IOException{        
         File file = new File(FileName);
-        BufferedReader br = new BufferedReader(new FileReader(file));        
-        IpAdresse=br.readLine();        
-        UserName=br.readLine();                
-        br.close();
+        try (BufferedReader br = new BufferedReader(new FileReader(file))) {
+            IpAdresse=br.readLine();
+            UserName=br.readLine();
+            return true ;
+        }
+        catch (Exception e){
+            return false ;
+        }
     }
     
     /**
-     *
+     * Récupère l'adresse ip et le nom d'utilisateur du pont enregistrés dans le fichier passé en parametre
+     * @param fileName chemin du fichier contenant l'adresse ip
+     * @return false s'il y a des erreurs et  true sinon
+     * @throws FileNotFoundException
+     * @throws IOException 
+     */
+    public boolean getIpUserFromFile(String fileName) {        
+        File file = new File(fileName);
+        try (BufferedReader br = new BufferedReader(new FileReader(file))) {
+            IpAdresse=br.readLine();
+            UserName=br.readLine();
+            return true ;
+        }
+        catch (Exception e){
+            return false ;
+        }
+    }
+    
+    /**
+     *  connecter a la derniere ip utilisée 
+     * @return false s'il y a des erreurs et  true sinon
      * @throws IOException
      */
-    public void connectToLastKnownIP() throws IOException{
-        getIpFromFile();
+    public boolean connectToLastKnownIP() throws IOException{
+        if (!getIpUserFromFile())
+            return false;            
         accessP.setIpAddress(IpAdresse);
         accessP.setUsername(UserName);
         try{
         while(!phHueSDK.isAccessPointConnected(accessP)){
-            Thread.sleep(500);
+            Thread.sleep(200);
             phHueSDK.connect(accessP);   
         }
         }
@@ -162,10 +190,35 @@ public class PhilipsHue {
         bridge = phHueSDK.getAllBridges().get(0);
         connected = true ;
         }
+        return true ;
     }
     
     /**
-     *
+     * connecter a la derniere ip utilisée 
+     * @param fileName chemin du fichier contenant l'adresse ip
+     * @return false s'il y a des erreurs et  true sinon
+     * @throws IOException 
+     */
+    public boolean  connectToLastKnownIP(String fileName) throws IOException{
+        if (!getIpUserFromFile(fileName))
+            return false;
+        accessP.setIpAddress(IpAdresse);
+        accessP.setUsername(UserName);
+        try{
+        while(!phHueSDK.isAccessPointConnected(accessP)){
+            Thread.sleep(200);
+            phHueSDK.connect(accessP);   
+        }
+        }
+        catch(Exception e) {                        
+        bridge = phHueSDK.getAllBridges().get(0);
+        connected = true ;
+        }
+        return true ;
+    }
+    
+    /**
+     * recherche tous les ponts connectés au lan et se connecte au premier trouvé par defaut
      */
     public void searchBridge(){
         phHueSDK.getNotificationManager().registerSDKListener(listener);
@@ -255,30 +308,47 @@ public class PhilipsHue {
     }
 
     /**
-     *
+     * Constructeur 
      */
     public PhilipsHue() {
         phHueSDK = PHHueSDK.create();
         FileName = "LastKnownIP";
         connected = false ; 
         accessP = new PHAccessPoint();
+        BridgeNumber = 0 ; 
         listener = new PHSDKListener() {                        
+        
+        /**
+         * quand searchBridge() termine son travail elle va appeler cette methode
+         * pour se connecter au pont qui a pour numero BridgeNumber
+         * @param accessPoint liste de ponts trouvés
+         */
         @Override
         public void onAccessPointsFound(List accessPoint) {            
             PHHueSDK phHueSDK = PHHueSDK.create();
-            phHueSDK.connect((PHAccessPoint) accessPoint.get(0));
+            phHueSDK.connect((PHAccessPoint) accessPoint.get(BridgeNumber));
         }
-        
+        /**
+         * Mise à jour du cache contenant toutes les informations nécessaires (messages, configuration, adresse ip, nom d'utilisateur)
+         * @param cacheNotificationsList : liste des informations contenues dans le cache
+         * @param bridge : pont connecté à la lampe
+         */
         @Override
         public void onCacheUpdated(List cacheNotificationsList, PHBridge bridge) {                         
             if (cacheNotificationsList.contains(PHMessageType.LIGHTS_CACHE_UPDATED)) {
                System.out.println("Lights Cache Updated ");
             }
         }
-
+        
+        /**
+         * quand la connection s'effectue on applique cette methode qui va enregistrer 
+         * l'adresse ip et le nom d'utilisateur dans le fichier 
+         * @param b : pont connecté à la lampe
+         * @param username : username nécessaire pour se connecter à la lampe
+         */
         @Override
         public void onBridgeConnected(PHBridge b, String username) {                                    
-            System.out.println("connect !!");
+            System.out.println("connected !!");
             bridge = b ;             
             connected = true;            
             try {
@@ -319,7 +389,7 @@ public class PhilipsHue {
         }
     };                                                
         try{
-            getIpFromFile();
+            getIpUserFromFile();
         }
         catch(Exception e){
             System.out.println("file doesn't exist");
@@ -328,11 +398,11 @@ public class PhilipsHue {
     }
 
     /**
-     *
-     * @param c
-     * @return
+     * converti les couleurs de RGB à XY
+     * @param c : couleur à convertir
+     * @return x et y (les deux coordonées de la couleur en XY)
      */
-    public  double[] getRGBtoXY(Color c) {
+    public  double[] convertRGBtoXY(Color c) {
         // For the hue bulb the corners of the triangle are:
         // -Red: 0.675, 0.322
         // -Green: 0.4091, 0.518
@@ -386,20 +456,20 @@ public class PhilipsHue {
     }
 
     /**
-     *
-     * @param c
-     * @param LampNumber
+     * Attribue une couleur RGB à une lampe
+     * @param c : couleur de la lampe en RGB
+     * @param LampNumber : numéro de la lampe dont on modifie la couleur
      */
     public void setRGB(Color c , int LampNumber){
-        double[] xy  = getRGBtoXY(c);
+        double[] xy  = convertRGBtoXY(c);
         setXY((float)xy[0], (float)xy[1], LampNumber);
     }
     
     /**
-     *
-     * @param x
-     * @param y
-     * @param LampNumber
+     * Attribue une couleur XY à une lampe
+     * @param x : paramètre X de la couleur en XY
+     * @param y : paramètre Y de la couleur en XY
+     * @param LampNumber : numéro de la lampe dont on modifie la couleur
      */
     public void setXY(float x,float y , int LampNumber){
         phHueSDK.setSelectedBridge(bridge);
