@@ -94,7 +94,7 @@ public class Translator {
         
     String indiceUtile[]=new String[msg.split("\\s").length -1];
     indiceUtile = msg.split("\\s");
-    for (int j = 0; j < indiceUtile.length; j++) {
+    for (int j = 1; j < indiceUtile.length; j++) {
         System.out.println(indiceUtile[j]);
                  
         switch (indiceUtile[j]) {
@@ -133,8 +133,9 @@ public class Translator {
             }
                 
         break;        
-        default:
-            System.err.println("option  invalide  choisir entre: \n -l (lampe) \n -i (ip) \n -c (couleur)  \n -t (topic)\n -b (brightness)\n -rgb (color rgb) \n -h(help) ");          
+        default: 
+         j=j+1 ;
+           // System.err.println("option  invalide  choisir entre: \n -l (lampe) \n -i (ip) \n -c (couleur)  \n -t (topic)\n -b (brightness)\n -rgb (color rgb) \n -h(help) ");          
             
         }
     }
