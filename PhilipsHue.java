@@ -72,7 +72,6 @@ public class PhilipsHue {
     private PHAccessPoint accessP ;            
     private PHSDKListener listener ;
     private int BridgeNumber;
-      Color TempC ;
 
     /**
      * Ecrit chaque élément du tableau sur une ligne du fichier
@@ -177,15 +176,25 @@ public class PhilipsHue {
      * @throws IOException
      */
     public boolean connectToLastKnownIP() throws IOException{
-        if (!getIpUserFromFile())
-            return false;            
+        if (!getIpUserFromFile()){            
+            searchBridge();
+        }
+            
         accessP.setIpAddress(IpAdresse);
         accessP.setUsername(UserName);
+        if(IpAdresse==null||UserName==null){
+            System.out.println("fichier vide !!");
+            return false ;  
+        }
         try{
-        while(!phHueSDK.isAccessPointConnected(accessP)){
+        for(int i = 0 ; i <10 &&(!phHueSDK.isAccessPointConnected(accessP)) ; i++){
             Thread.sleep(200);
             phHueSDK.connect(accessP);   
         }
+        if(!phHueSDK.isAccessPointConnected(accessP)){
+            System.out.println("connection fail !!");
+            return false ; 
+        }            
         }
         catch(Exception e) {                        
         bridge = phHueSDK.getAllBridges().get(0);
@@ -201,15 +210,26 @@ public class PhilipsHue {
      * @throws IOException 
      */
     public boolean  connectToLastKnownIP(String fileName) throws IOException{
-        if (!getIpUserFromFile(fileName))
-            return false;
+        if (!getIpUserFromFile(fileName)){
+            FileName = fileName ; 
+            searchBridge();
+        }
+            
         accessP.setIpAddress(IpAdresse);
         accessP.setUsername(UserName);
+        if(IpAdresse==null||UserName==null){
+            System.out.println("fichier vide !!");
+            return false ;  
+        }
         try{
-        while(!phHueSDK.isAccessPointConnected(accessP)){
+        for(int i = 0 ; i <10 &&(!phHueSDK.isAccessPointConnected(accessP)) ; i++){
             Thread.sleep(200);
             phHueSDK.connect(accessP);   
         }
+        if(!phHueSDK.isAccessPointConnected(accessP)){
+            System.out.println("connection fail !!");
+            return false ; 
+        }            
         }
         catch(Exception e) {                        
         bridge = phHueSDK.getAllBridges().get(0);
@@ -480,26 +500,55 @@ public class PhilipsHue {
         lightState.setX(x);
         bridge.updateLightState(bridge.getResourceCache().getAllLights().get(LampNumber), lightState);
     }
-       public void changerCouleurSelonTemp(String Temp , String lampe){
-        double temp = Double.parseDouble(Temp);
-        
-        if (temp <=-5 ){
-            TempC= new Color(0,0,255);   //bleu
+    public boolean setRGBtoRangeOL(int i , int j ,Color c ){
+        for (int k = i; k < j; k++) {
+            try {
+                setRGB(c, k);
+            } catch (Exception e) {
+                System.out.println("invalid range !!");
+                return false ; 
+            }            
         }
-        else if((temp >-5)&&(temp<=5)){
-             TempC= new Color(0,255,255);  //cyan
-        }
-         else if((temp >5)&&(temp<=15)){
-             TempC= new Color(0,255,0);  //vert
-        }
-          else if((temp >15)&&(temp<=30)){
-             TempC= new Color(255,255,0); //jaune 
-        }
-        else if (temp>30){
-            TempC = new Color(255,0,0); //rouge
-        }
-       this.setRGB(TempC,Integer.parseInt(lampe));
+        return true  ;
     }
-    
+    public boolean setRGBtoRangeOL(int j ,Color c ){
+        for (int k = 0; k < j; k++) {
+            try {
+                setRGB(c, k);
+            } catch (Exception e) {
+                System.out.println("invalid range !!");
+                return false ; 
+            }            
+        }
+        return true  ;
+    }
+    public boolean connect(String ip ,String user) throws IOException{
+        
+        accessP.setIpAddress(ip);
+        accessP.setUsername(UserName);
+        if(IpAdresse==null||UserName==null){
+            System.out.println("fichier vide !!");
+            return false ;  
+        }
+        try{
+        for(int i = 0 ; i <10 &&(!phHueSDK.isAccessPointConnected(accessP)) ; i++){
+            Thread.sleep(200);
+            phHueSDK.connect(accessP);   
+        }
+        if(!phHueSDK.isAccessPointConnected(accessP)){
+            System.out.println("connection fail !!");
+            return false ; 
+        }            
+        }
+        catch(Exception e) {                        
+        bridge = phHueSDK.getAllBridges().get(0);
+        connected = true ;
+        }
+        String[] str = new String[2];
+        str[0] = IpAdresse; 
+        str[1] = UserName; 
+        writeInFile(str, 2);
+        return true ;
+    }
 }
   
