@@ -157,7 +157,7 @@ public class Translator {
         break;    
         case "setHue":
            
-            philipsHue.get(this.id).setHue(this.id,Integer.parseInt(lampe));
+            philipsHue.get(this.id).setHue(Integer.parseInt(color),Integer.parseInt(lampe));
           
            System.out.println("met la couleur "+color+" a la lampe"+lampe);
          
@@ -171,7 +171,7 @@ public class Translator {
         break;
         
         case "setBrightnessNHue":
-         //   philipsHue.get(this.id).setBrightnessNHue(this.id, Integer.parseInt(brightness), Integer.parseInt(lampe));
+            philipsHue.get(this.id).setBrightnessAndColor(this.id, Integer.parseInt(brightness), Integer.parseInt(lampe));
         break;   
         
         case "connectToLastKnownIP":
