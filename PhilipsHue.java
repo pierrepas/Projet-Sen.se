@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package philips.hue;
+package sen.se;
 /**
  *
  * @author moh
@@ -72,6 +72,7 @@ public class PhilipsHue {
     private PHAccessPoint accessP ;            
     private PHSDKListener listener ;
     private int BridgeNumber;
+      Color TempC ;
 
     /**
      * Ecrit chaque élément du tableau sur une ligne du fichier
@@ -479,7 +480,26 @@ public class PhilipsHue {
         lightState.setX(x);
         bridge.updateLightState(bridge.getResourceCache().getAllLights().get(LampNumber), lightState);
     }
-    
+       public void changerCouleurSelonTemp(String Temp , String lampe){
+        double temp = Double.parseDouble(Temp);
+        
+        if (temp <=-5 ){
+            TempC= new Color(0,0,255);   //bleu
+        }
+        else if((temp >-5)&&(temp<=5)){
+             TempC= new Color(0,255,255);  //cyan
+        }
+         else if((temp >5)&&(temp<=15)){
+             TempC= new Color(0,255,0);  //vert
+        }
+          else if((temp >15)&&(temp<=30)){
+             TempC= new Color(255,255,0); //jaune 
+        }
+        else if (temp>30){
+            TempC = new Color(255,0,0); //rouge
+        }
+       this.setRGB(TempC,Integer.parseInt(lampe));
+    }
     
 }
   
