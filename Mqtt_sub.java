@@ -48,7 +48,7 @@ public class Mqtt_sub {
 					messageMQTT = message;
                                         Translator t = new Translator(0);
 					System.out.println("Message arrived : \"" + message.toString() + "\" on topic \""+ topic +"\"" );
-                                        t.Translate(topic);
+                                        t.Translate(message.toString());
 				}
 				catch (Exception e){
 					e.printStackTrace();
