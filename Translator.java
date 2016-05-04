@@ -19,16 +19,16 @@ import java.util.List;
  * Vouillamoz Fred
  * Ouali-Alami Mohamed
  * Pasquier Pierre
- * Petre R�my
+ * Petre Rï¿½my
  * Charbonnier Jonathan
  * Priscoglio Florent
  * Ziadeh Mohamad
  */
 
 /**
- * La classe Translator r�cup�re des messages du Mosquitto
+ * La classe Translator rï¿½cupï¿½re des messages du Mosquitto
  * et effectue une traduction afin de pouvoir controler la lampe
- * en lui envoyant les commandes d�ja pr�d�finies par PhilipsHue
+ * en lui envoyant les commandes dï¿½ja prï¿½dï¿½finies par PhilipsHue
  *
  */
 
@@ -60,13 +60,7 @@ public class Translator {
     }
  
 
-    Translator() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    Translator(String msg) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
+  
     /*
     // -l = lampe
 		on change de lampe
@@ -87,12 +81,12 @@ public class Translator {
 		affiche la liste des commandes disponibles
 		
 	// -temp = temperature
-		modifie la couleur de la lampe en fonction de la temperature capt�e par un cookie "capteur de temperature"
+		modifie la couleur de la lampe en fonction de la temperature captï¿½e par un cookie "capteur de temperature"
 		
     // On utilise le format RGB pour choisir les couleurs 
     // 
 	*/
- String lampe = null;
+    String lampe = null;
     String ip = null ;
     String color = null;
     String topic = null;
@@ -109,10 +103,11 @@ public class Translator {
         co = new Color(Integer.parseInt(r), Integer.parseInt(g), Integer.parseInt(b));
     String help= null ;
         
-    String indiceUtile[]=new String[msg.split("\\s").length -1];
+    String indiceUtile[]=new String[msg.split("\\s").length ];
     indiceUtile = msg.split("\\s");
+
 	/*
-	on recoit une commande que l'on va d�composer a chaque espace ,et stocker chaque morceau dans un tableau
+	on recoit une commande que l'on va dï¿½composer a chaque espace ,et stocker chaque morceau dans un tableau
 	*/
 	
     for (int j = 1; j < indiceUtile.length; j++) {
@@ -145,7 +140,7 @@ public class Translator {
         case "-rgb":
             int z=0;
 			
-			/*on recupere chaque valeur rgb en concatenant chaque chiffre afin d'obtenir le nombre correspondant a la couleurs d�siree
+			/*on recupere chaque valeur rgb en concatenant chaque chiffre afin d'obtenir le nombre correspondant a la couleurs dï¿½siree
 			exemple : 
 			
 			-rgb 255/45/65 
@@ -177,13 +172,13 @@ public class Translator {
                 
         break;        
         default:
-            j=j+1;          
+                     
             
         }
     }
     
 	
-	/* on regarde la premier argument du message recuper� qui va definir l'action a r�aliser */
+	/* on regarde la premier argument du message recuperï¿½ qui va definir l'action a rï¿½aliser */
     switch (indiceUtile[0]) {
         
         case "searchBridge":
@@ -199,11 +194,11 @@ public class Translator {
             System.out.println("mettre adresse Ip "+ip);
             
         break;    
-        case "selectHue":
-           
-            philipsHue.get(this.id).setHue(this.id,Integer.parseInt(lampe));
+        case "setHue":
+        	  System.out.println("met la couleur "+color+" a la lampe "+ lampe);
+            philipsHue.get(this.id).setHue(Integer.parseInt(color),Integer.parseInt(lampe));
           
-           System.out.println("met la couleur "+color+" a la lampe"+lampe);
+         
          
         break;    
     
@@ -229,7 +224,10 @@ public class Translator {
         break; 
         case "changerCouleurSelonTemp" :
           //  philipsHue.get(this.id).changerCouleurSelonTemp(TEMP,lampe);
-        
+        case "connect":
+        	
+        	philipsHue.get(this.id).connect("127.0.1.1:80","newdeveloper");
+        break ;
         default:
             System.err.println("message invalide ");             
     } 
