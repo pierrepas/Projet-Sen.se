@@ -1,4 +1,4 @@
-package pilotageLampe_v2;
+package sen.se;
 
 import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
 import org.eclipse.paho.client.mqttv3.MqttCallback;
@@ -11,8 +11,7 @@ public class Mqtt_sub {
 	private static String topic;
 	private final static String BROKER_URI = "tcp://localhost:1883";
 	private static MqttClient mqttClient;
-	private static MqttMessage messageMQTT;
-	
+	private static MqttMessage messageMQTT;	
 	public MqttMessage getMessageMQTT(){
 		return messageMQTT;
 	}
@@ -34,10 +33,12 @@ public class Mqtt_sub {
 	}
 
 	public static void main(String[] args)throws MqttSecurityException, MqttException {
-		mqttClient = new MqttClient(BROKER_URI,	MqttClient.generateClientId());
+		
+                mqttClient = new MqttClient(BROKER_URI,	MqttClient.generateClientId());
 		topic = "temp";
+                
 		mqttClient.setCallback(new MqttCallback() {
-
+                    
 			@Override
 			public void messageArrived(String topic, MqttMessage message) throws Exception {
 
@@ -45,7 +46,9 @@ public class Mqtt_sub {
 				try {
 //					color = Integer.parseInt(message.toString());
 					messageMQTT = message;
+                                        Translator t = new Translator(0);
 					System.out.println("Message arrived : \"" + message.toString() + "\" on topic \""+ topic +"\"" );
+                                        t.Translate(topic);
 				}
 				catch (Exception e){
 					e.printStackTrace();
