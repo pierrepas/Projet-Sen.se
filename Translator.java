@@ -19,16 +19,16 @@ import java.util.List;
  * Vouillamoz Fred
  * Ouali-Alami Mohamed
  * Pasquier Pierre
- * Petre Rémy
+ * Petre Rï¿½my
  * Charbonnier Jonathan
  * Priscoglio Florent
  * Ziadeh Mohamad
  */
 
 /**
- * La classe Translator récupère des messages du Mosquitto
+ * La classe Translator rï¿½cupï¿½re des messages du Mosquitto
  * et effectue une traduction afin de pouvoir controler la lampe
- * en lui envoyant les commandes déja prédéfinies par PhilipsHue
+ * en lui envoyant les commandes dï¿½ja prï¿½dï¿½finies par PhilipsHue
  *
  */
 
@@ -40,8 +40,8 @@ public class Translator {
  
  
     public List<PhilipsHue> philipsHue;
-    public Mqtt_pub mqtt_pub ;
-    public Mqtt_sub mqtt_sub ;
+    //public Mqtt_pub mqtt_pub ;
+    //public Mqtt_sub mqtt_sub ;
     public int id;
     
     
@@ -53,10 +53,10 @@ public class Translator {
     public Translator(int idd)
     {
       this.philipsHue = new ArrayList<PhilipsHue>();
-      this.mqtt_pub =new Mqtt_pub();
-      this.mqtt_sub =new Mqtt_sub();
+      //this.mqtt_pub =new Mqtt_pub();
+      //this.mqtt_sub =new Mqtt_sub();
       this.id  = idd;
-      
+      philipsHue.add(new PhilipsHue());
     }
  
 
@@ -87,7 +87,7 @@ public class Translator {
 		affiche la liste des commandes disponibles
 		
 	// -temp = temperature
-		modifie la couleur de la lampe en fonction de la temperature captée par un cookie "capteur de temperature"
+		modifie la couleur de la lampe en fonction de la temperature captï¿½e par un cookie "capteur de temperature"
 		
     // On utilise le format RGB pour choisir les couleurs 
     // 
@@ -97,21 +97,22 @@ public class Translator {
     String color = null;
     String topic = null;
     String brightness = null ;
-    String r = null;  
-    String g = null;
-    String b = null;
+    String r = "";  
+    String g = "";
+    String b = "";
     String TEMP = null ;
     
     
     void Translate(String msg) throws IOException{
-    
-    Color co = new Color(Integer.parseInt(r), Integer.parseInt(g), Integer.parseInt(b));;
+    Color co = null ;
+    if(!r.isEmpty()&&!g.isEmpty()&&!b.isEmpty())
+        co = new Color(Integer.parseInt(r), Integer.parseInt(g), Integer.parseInt(b));
     String help= null ;
         
     String indiceUtile[]=new String[msg.split("\\s").length -1];
     indiceUtile = msg.split("\\s");
 	/*
-	on recoit une commande que l'on va décomposer a chaque espace ,et stocker chaque morceau dans un tableau
+	on recoit une commande que l'on va dï¿½composer a chaque espace ,et stocker chaque morceau dans un tableau
 	*/
 	
     for (int j = 1; j < indiceUtile.length; j++) {
@@ -144,7 +145,7 @@ public class Translator {
         case "-rgb":
             int z=0;
 			
-			/*on recupere chaque valeur rgb en concatenant chaque chiffre afin d'obtenir le nombre correspondant a la couleurs désiree
+			/*on recupere chaque valeur rgb en concatenant chaque chiffre afin d'obtenir le nombre correspondant a la couleurs dï¿½siree
 			exemple : 
 			
 			-rgb 255/45/65 
@@ -164,11 +165,11 @@ public class Translator {
             for (int i = 0; i <indiceUtile[j+1].length() -1 ; i++) {
                 if (indiceUtile[j+1].charAt(i) != '/' ){
                     if (z==0)
-                        r = indiceUtile[j+1].charAt(i);
+                        r += indiceUtile[j+1].charAt(i);
                     if(z==1)
-                        g = indiceUtile[j+1].charAt(i);
+                        g += indiceUtile[j+1].charAt(i);
                     if(z==2)
-                        b = indiceUtile[j+1].charAt(i);
+                        b += indiceUtile[j+1].charAt(i);
                 }
                 else
                     z++;
@@ -182,7 +183,7 @@ public class Translator {
     }
     
 	
-	/* on regarde la premier argument du message recuperé qui va definir l'action a réaliser */
+	/* on regarde la premier argument du message recuperï¿½ qui va definir l'action a rï¿½aliser */
     switch (indiceUtile[0]) {
         
         case "searchBridge":
@@ -219,6 +220,7 @@ public class Translator {
         break;   
         
         case "connectToLastKnownIP":
+            System.out.println("worked !!");
             philipsHue.get(this.id).connectToLastKnownIP() ;
         break;
         
@@ -226,7 +228,7 @@ public class Translator {
             philipsHue.get(this.id).setRGB(co,Integer.parseInt(lampe));
         break; 
         case "changerCouleurSelonTemp" :
-            philipsHue.get(this.id).changerCouleurSelonTemp(TEMP,lampe);
+          //  philipsHue.get(this.id).changerCouleurSelonTemp(TEMP,lampe);
         
         default:
             System.err.println("message invalide ");             
