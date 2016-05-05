@@ -158,18 +158,22 @@ public class Translator {
 			
 			*/
 			
-            for (int i = 0; i <indiceUtile[j+1].length() -1 ; i++) {
-                if (indiceUtile[j+1].charAt(i) != '/' ){
-                    if (z==0)
-                        r += indiceUtile[j+1].charAt(i);
-                    if(z==1)
-                        g += indiceUtile[j+1].charAt(i);
-                    if(z==2)
-                        b += indiceUtile[j+1].charAt(i);
-                }
-                else
-                    z++;
-            }
+           switch (indiceUtile[j+1]) {
+			case "red":
+				rgb=Color.red;
+				
+				
+				break;
+			case "blue":
+				rgb=Color.blue ;
+				break ;
+			case "white":
+				rgb=Color.WHITE;
+				break ;
+
+			default:
+				break;
+			}
                 
         break;        
         default:
