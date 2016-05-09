@@ -172,8 +172,8 @@ public class Translator {
                 else
                     z++;
             }
-            	rgb=new Color(Integer.parseInt(r),Integer.parseInt(g),Integer.parseInt(b));
-            	r=nulll ; g=null ; b=null ;
+           rgb=new Color(Integer.parseInt(r),Integer.parseInt(g),Integer.parseInt(b));
+           r=nulll ; g=null ; b=null ;
                 
         break;        
         default:
@@ -228,8 +228,9 @@ public class Translator {
         
             philipsHue.get(this.id).setRGB(rgb,Integer.parseInt(lampe));
         break; 
-        case "changerCouleurSelonTemp" :
-          //  philipsHue.get(this.id).changerCouleurSelonTemp(TEMP,lampe);
+          case "setTemperature" :
+             philipsHue.get(this.id).setTemperature(TEMP,lampe);
+             break ;
         case "connect":
         	
         	philipsHue.get(this.id).connect("localhost:80","newdeveloper");
