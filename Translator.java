@@ -103,9 +103,7 @@ public class Translator {
     
     
     void Translate(String msg) throws IOException{
-    Color co = null ;
-    if(!r.isEmpty()&&!g.isEmpty()&&!b.isEmpty())
-        co = new Color(Integer.parseInt(r), Integer.parseInt(g), Integer.parseInt(b));
+   
     String help= null ;
         
     String indiceUtile[]=new String[msg.split("\\s").length ];
@@ -162,7 +160,7 @@ public class Translator {
 			
 			*/
 			
-            for (int i = 0; i <indiceUtile[j+1].length() -1 ; i++) {
+            for (int i = 0; i <indiceUtile[j+1].length()  ; i++) {
                 if (indiceUtile[j+1].charAt(i) != '/' ){
                     if (z==0)
                         r += indiceUtile[j+1].charAt(i);
@@ -174,6 +172,8 @@ public class Translator {
                 else
                     z++;
             }
+           rgb=new Color(Integer.parseInt(r),Integer.parseInt(g),Integer.parseInt(b));
+           r=nulll ; g=null ; b=null ;
                 
         break;        
         default:
@@ -225,11 +225,12 @@ public class Translator {
         break;
         
         case "setRGB":
-        	rgb=new Color(Integer.parseInt(r),Integer.parseInt(g),Integer.parseInt(b));
+        
             philipsHue.get(this.id).setRGB(rgb,Integer.parseInt(lampe));
         break; 
-        case "changerCouleurSelonTemp" :
-          //  philipsHue.get(this.id).changerCouleurSelonTemp(TEMP,lampe);
+          case "setTemperature" :
+             philipsHue.get(this.id).setTemperature(Integer.parseInt(TEMP),Integer.parseInt(lampe));
+             break ;
         case "connect":
         	
         	philipsHue.get(this.id).connect("localhost:80","newdeveloper");
