@@ -19,16 +19,16 @@ import java.util.List;
  * Vouillamoz Fred
  * Ouali-Alami Mohamed
  * Pasquier Pierre
- * Petre Rémy
+ * Petre RÃ¯Â¿Â½my
  * Charbonnier Jonathan
  * Priscoglio Florent
  * Ziadeh Mohamad
  */
 
 /**
- * La classe Translator récupère des messages du Mosquitto
+ * La classe Translator rÃ¯Â¿Â½cupÃ¯Â¿Â½re des messages du Mosquitto
  * et effectue une traduction afin de pouvoir controler la lampe
- * en lui envoyant les commandes déja prédéfinies par PhilipsHue
+ * en lui envoyant les commandes dÃ¯Â¿Â½ja prÃ¯Â¿Â½dÃ¯Â¿Â½finies par PhilipsHue
  *
  */
 
@@ -40,9 +40,10 @@ public class Translator {
  
  
     public List<PhilipsHue> philipsHue;
-    public Mqtt_pub mqtt_pub ;
-    public Mqtt_sub mqtt_sub ;
-    public int id;
+    //public Mqtt_pub mqtt_pub ;
+    //public Mqtt_sub mqtt_sub ;
+	//public PhilipsHue philipsHue;
+	public int id;
     
     
 /*
@@ -50,54 +51,86 @@ public class Translator {
  Le constructeur de la classe   Translator
     
  */ 
-    public Translator(int idd)
-    {
-      this.philipsHue = new ArrayList<PhilipsHue>();
-      this.mqtt_pub =new Mqtt_pub();
-      this.mqtt_sub =new Mqtt_sub();
-      this.id  = idd;
-      
-    }
+   
  
 
-    Translator() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    Translator(String msg) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
+  
+    public Translator(PhilipsHue p, int idd) {
+    	this.philipsHue = new ArrayList<PhilipsHue>();
+        //this.mqtt_pub =new Mqtt_pub();
+        //this.mqtt_sub =new Mqtt_sub();
+        this.id  = idd;
+        philipsHue.add(p);
+	}
     
+    public Translator( int idd) {
+    	this.philipsHue = new ArrayList<PhilipsHue>();
+        //this.mqtt_pub =new Mqtt_pub();
+        //this.mqtt_sub =new Mqtt_sub();
+        this.id  = idd;
+        PhilipsHue p = new PhilipsHue();
+        philipsHue.add(p);
+	}
+
+
+
+	/*
     // -l = lampe
+		on change de lampe
+		
     // -i = ip
+		on change de pont 
+	
     // -c = color
+		on change la couleur en rvb
+		
     // -t = topic
+		on change le topic dont on recupere et traite les commandes
+		
     // -b = brightness
+		on change la luminosite de la lampe
+		
     // -h = help 
+		affiche la liste des commandes disponibles
+		
+	// -temp = temperature
+		modifie la couleur de la lampe en fonction de la temperature captÃ¯Â¿Â½e par un cookie "capteur de temperature"
+		
     // On utilise le format RGB pour choisir les couleurs 
     // 
+	*/
     String lampe = null;
     String ip = null ;
     String color = null;
     String topic = null;
     String brightness = null ;
-    String r = null;  
-    String g = null;
-    String b = null;
+    String r = "";  
+    String g = "";
+    String b = "";
     String TEMP = null ;
+    String user = null ;
+    Color rgb= null ;
     
     
     void Translate(String msg) throws IOException{
-    
-    Color co = new Color(Integer.parseInt(r), Integer.parseInt(g), Integer.parseInt(b));;
+   
     String help= null ;
         
-    String indiceUtile[]=new String[msg.split("\\s").length -1];
+    String indiceUtile[]=new String[msg.split("\\s").length ];
     indiceUtile = msg.split("\\s");
+
+	/*
+	on recoit une commande que l'on va dÃ¯Â¿Â½composer a chaque espace ,et stocker chaque morceau dans un tableau
+	*/
+	
     for (int j = 1; j < indiceUtile.length; j++) {
         System.out.println(indiceUtile[j]);
-                 
+        
+
+
+	
         switch (indiceUtile[j]) {
+		/* on associe a la variable concerne par la commande sa valeur ( par exempe temp = 25% )	*/
         case "-l":
             lampe =indiceUtile[j+1];
             break;    
@@ -114,32 +147,56 @@ public class Translator {
         case "-b":
             brightness =indiceUtile[j+1];
             break;    
+        case "-u":
+            user =indiceUtile[j+1];
+            break;    
         case "-Temp":
             TEMP =indiceUtile[j+1];
             break;    
         case "-rgb":
             int z=0;
-            for (int i = 0; i <indiceUtile[j+1].length() -1 ; i++) {
+			
+			/*on recupere chaque valeur rgb en concatenant chaque chiffre afin d'obtenir le nombre correspondant a la couleurs dÃ¯Â¿Â½siree
+			exemple : 
+			
+			-rgb 255/45/65 
+			
+			tour de boucle : valeur
+			
+			
+			1 - r = 255
+			2 - r = 45
+			3 - r = 65
+			
+			r rencontre un "/" element delimitateur des differentes couleurs on passe donc a l'element suivant G
+			
+			
+			*/
+			
+            for (int i = 0; i <indiceUtile[j+1].length()  ; i++) {
                 if (indiceUtile[j+1].charAt(i) != '/' ){
                     if (z==0)
-                        r = r + indiceUtile[j+1].charAt(i);
+                        r += indiceUtile[j+1].charAt(i);
                     if(z==1)
-                        g = g + indiceUtile[j+1].charAt(i);
+                        g += indiceUtile[j+1].charAt(i);
                     if(z==2)
-                        b = b +indiceUtile[j+1].charAt(i);
+                        b += indiceUtile[j+1].charAt(i);
                 }
                 else
                     z++;
             }
+           rgb=new Color(Integer.parseInt(r),Integer.parseInt(g),Integer.parseInt(b));
+           r=null ; g=null ; b=null ;
                 
         break;        
-        default: 
-         j=j+1 ;
-           // System.err.println("option  invalide  choisir entre: \n -l (lampe) \n -i (ip) \n -c (couleur)  \n -t (topic)\n -b (brightness)\n -rgb (color rgb) \n -h(help) ");          
+        default:
+                     
             
         }
     }
     
+	
+	/* on regarde la premier argument du message recuperÃ¯Â¿Â½ qui va definir l'action a rÃ¯Â¿Â½aliser */
     switch (indiceUtile[0]) {
         
         case "searchBridge":
@@ -156,34 +213,40 @@ public class Translator {
             
         break;    
         case "setHue":
-           
+        	  System.out.println("met la couleur "+color+" a la lampe "+ lampe);
             philipsHue.get(this.id).setHue(Integer.parseInt(color),Integer.parseInt(lampe));
           
-           System.out.println("met la couleur "+color+" a la lampe"+lampe);
+         
          
         break;    
     
         case "setBrightness":
          
-           philipsHue.get(this.id).setBrightness(Integer.parseInt(brightness), Integer.parseInt(lampe));
+           philipsHue.get(this.id).setBrightness(Integer.parseInt(brightness), Integer.parseInt(lampe)); /*si pas de lampe en parametre?*/
+		   
            System.out.println("change la  luminosite en "+brightness+" de  la lampe "+ lampe);
       
         break;
         
-        case "setBrightnessNHue":
-            philipsHue.get(this.id).setBrightnessAndColor(this.id, Integer.parseInt(brightness), Integer.parseInt(lampe));
+        case "setBrightnessAndColor":
+           philipsHue.get(this.id).setBrightnessAndColor(Integer.parseInt(color), Integer.parseInt(brightness), Integer.parseInt(lampe));
         break;   
         
         case "connectToLastKnownIP":
-            philipsHue.get(this.id).connectToLastKnownIP() ;
+           
+            philipsHue.get(this.id).connectToLastKnownIP() ;                        
         break;
         
         case "setRGB":
-            philipsHue.get(this.id).setRGB(co,Integer.parseInt(lampe));
-        break; 
-        case "changerCouleurSelonTemp" :
-            philipsHue.get(this.id).changerCouleurSelonTemp(TEMP,lampe);
         
+            philipsHue.get(this.id).setRGB(rgb,Integer.parseInt(lampe));
+        break; 
+          case "setTemperature" :
+             philipsHue.get(this.id).setTemperature(Integer.parseInt(TEMP),Integer.parseInt(lampe));
+             break ;
+        case "connect":        	
+        	philipsHue.get(this.id).connect(ip,user);                
+        break ;
         default:
             System.err.println("message invalide ");             
     } 

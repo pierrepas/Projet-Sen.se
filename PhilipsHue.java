@@ -524,12 +524,8 @@ public class PhilipsHue {
     }
     public boolean connect(String ip ,String user) throws IOException{
         
-        accessP.setIpAddress(ip);
-        accessP.setUsername(UserName);
-        if(IpAdresse==null||UserName==null){
-            System.out.println("fichier vide !!");
-            return false ;  
-        }
+        accessP.setIpAddress(ip);System.out.println(ip);
+        accessP.setUsername(user);System.out.println(user);
         try{
         for(int i = 0 ; i <10 &&(!phHueSDK.isAccessPointConnected(accessP)) ; i++){
             Thread.sleep(200);
@@ -544,11 +540,27 @@ public class PhilipsHue {
         bridge = phHueSDK.getAllBridges().get(0);
         connected = true ;
         }
+        IpAdresse = bridge.getResourceCache().getBridgeConfiguration().getIpAddress() ; 
+        UserName = bridge.getResourceCache().getBridgeConfiguration().getUsername() ; 
         String[] str = new String[2];
         str[0] = IpAdresse; 
         str[1] = UserName; 
         writeInFile(str, 2);
         return true ;
+    }
+    void setTemperature(int temp ,int lampe){
+	if(temp<-5)
+		this.setRGB(Color.blue, lampe);
+	else if  (temp> -5 && temp<= 5){
+		this.setRGB(new Color(0,0,128), lampe);
+		this.setBrightness(30, lampe);}
+	else if (temp >5 && temp<15)
+		this.setRGB(Color.green, lampe);
+	else if (temp > 15 && temp <30)
+		this.setRGB(Color.yellow, lampe);
+	else 
+		this.setRGB(Color.red, lampe);
+	
     }
 }
   
