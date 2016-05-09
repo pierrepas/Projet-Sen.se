@@ -48,10 +48,21 @@ import com.philips.lighting.hue.sdk.PHAccessPoint;
 import com.philips.lighting.hue.sdk.PHHueSDK;
 import com.philips.lighting.model.PHBridge;
 
-/**
- *
- * @author Oussqq
+/** @author 
+ * Hassainia Mohamed
+ * Souissi Oussama
+ * Jommetti Leevan
+ * Vouillamoz Fred
+ * Ouali-Alami Mohamed
+ * Pasquier Pierre
+ * Petre Rï¿½my
+ * Charbonnier Jonathan
+ * Priscoglio Florent
+ * Ziadeh Mohamad
  */
+
+//classe App. C'est la classe Main
+
 public class App {
 
     /**
@@ -62,15 +73,13 @@ public class App {
      * @throws MqttSecurityException 
      */
     public static void main(String[] args) throws IOException, InterruptedException, MqttSecurityException, MqttException {
-        //String msg="searchBridge";
-    	//final PHHueSDK phHueSDK =PHHueSDK.create();
         PhilipsHue p = new PhilipsHue();
         Translator t = new Translator(p,0);
         
         
         //boolean x = p.getIpUserFromFile();
         //System.out.println(x);
-        //p.connect("127.0.1.1:80", "newdeveloper");
+        p.connect("127.0.1.1:80", "newdeveloper");
         System.out.println("adresse ip : " + p.getIpAdresse()+ " user : "+ p.getUserName());
         System.out.println("connexion etablie : " + p.isConnected());
 //        if(! p.connectToLastKnownIP()) {
@@ -84,25 +93,29 @@ public class App {
         
         //p.searchBridge();
         //System.out.println("connexion etablie : " + p.isConnected());
-        Mqtt_sub subscriber = new Mqtt_sub();
+        Mqtt_sub subscriber = new Mqtt_sub("temp");
         
    
         MqttMessage firstMessage = subscriber.getMessageMQTT();
+        //premier message mqtt a arriver. Tant qu'il n'est pas arrive, on attend
         String color;
-        while (!p.isConnected()){
-        	if(firstMessage == null){
+        while (!p.isConnected() || firstMessage == null){
+        	//if(firstMessage == null){
         		Thread.sleep(1000);
+        		t.Translate("setRGB -rgb 255/0/0 -l 0 ");
+            	
         		System.out.println(" message " + firstMessage + " connected : " + p.isConnected());
         		firstMessage = subscriber.getMessageMQTT();
-        	}
-        	else{
-        		t.Translate(firstMessage.toString());
-        	}
+        	//}
+        	//else{
+        		//t.Translate(firstMessage.toString());
+        	//}
         	
     	
         }
+        
         System.out.println("connexion etablie : " + p.isConnected());
-
+        t.Translate(firstMessage.toString());
     	
     	MqttMessage oldMessage = firstMessage;
         
@@ -114,28 +127,8 @@ public class App {
         	//alors on change l'etat de la lampe sinon on attend que les messages soient differents
         	//cela voudra dire qu'un nouveau message est arrivé
         	
-        	if (!(oldMessage.toString().contentEquals(newMessage.toString()))) {
-//        		color = newMessage.toString();
-//        		 
+        	if (!(oldMessage.toString().contentEquals(newMessage.toString()))) {        		 
         		oldMessage = newMessage;
-//        		 
-//        		switch (color) {
-//        		case "red":
-//        			for (int i = 0; i < 3; i++) {
-//        				p.setRGB(Color.red,i);
-//        			}
-//        			break;
-//        		case "blue":
-//        			for (int i = 0; i < 3; i++) {
-//        				p.setRGB(Color.blue,i);
-//        			}
-//        			break;
-//        		default:
-//        			for (int i = 0; i < 3; i++) {
-//						p.setRGB(Color.white,i);
-//					}
-//		           	break;
-//				}
         		t.Translate(newMessage.toString());
         	}
         	
