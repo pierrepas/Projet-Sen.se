@@ -229,7 +229,7 @@ public class Translator {
             philipsHue.get(this.id).setRGB(rgb,Integer.parseInt(lampe));
         break; 
           case "setTemperature" :
-             philipsHue.get(this.id).setTemperature(TEMP,lampe);
+             philipsHue.get(this.id).setTemperature(Integer.parseInt(TEMP),Integer.parseInt(lampe));
              break ;
         case "connect":
         	
