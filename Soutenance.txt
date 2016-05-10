@@ -1,40 +1,40 @@
 --Intro :
-Projet demandé par un chercheur du labo LISTIC sur les objets connectés
+Projet demandÃ© par un chercheur du labo LISTIC sur les objets connectÃ©s
 
 --Contexte :
-domotique, les objets sont connectés entre eux pour effectuer des actions automatiquement en fonction 
-de l'environnement, mais les différents objets ne peuvent pas forcément communiquer entre eux, ce qui
-fait qu'ils ne sont pas si indépendants.
+domotique, les objets sont connectÃ©s entre eux pour effectuer des actions automatiquement en fonction 
+de l'environnement, mais les diffÃ©rents objets ne peuvent pas forcÃ©ment communiquer entre eux, ce qui
+fait qu'ils ne sont pas si indÃ©pendants.
 
---Problématique (MQTT) :
+--ProblÃ©matique (MQTT) :
 MQTT est un protocole de messagerie qui pourrait
-permettre de fait intéragir différents objets entre eux.
+permettre de fait intÃ©ragir diffÃ©rents objets entre eux.
  
 --Demo :
 
 --Technique :
 -> MQTT (Message Queuing Telemetry Transport)
-protocole de messagerie publish-subscribe = les messages sont publiés dans une ou plusieurs catégories, ils ne sont
-donc pas adressés à des destinataires en particulier, et les destinataires s'abonnent aux catégories qui les intéressent.
-basé sur le protocole TCP/IP
+protocole de messagerie publish-subscribe = les messages sont publiÃ©s dans une ou plusieurs catÃ©gories, ils ne sont
+donc pas adressÃ©s Ã  des destinataires en particulier, et les destinataires s'abonnent aux catÃ©gories qui les intÃ©ressent.
+basÃ© sur le protocole TCP/IP
 utilisation d'un serveur mosquitto, qui est un broker/serveur MQTT
 
 -> Protocoles
-MQTT -> permet de communiquer entre le cookie et la lampe
-Bluetooth (?) -> permet la transmission de données entre le cookie et le bridge
+MQTT -> permet de communiquer entre le bridge et la lampe
+Bluetooth (?) -> permet la transmission de donnÃ©es entre le cookie et le bridge
 
 -> Raspberry
-Héberge le serveur mosquitto, ainsi que les "morceaux de code" qui permettent de récupérer les données du cookie
+HÃ©berge le serveur mosquitto, ainsi que les "morceaux de code" qui permettent de rÃ©cupÃ©rer les donnÃ©es du cookie
 et de les traduire ensuite en instructions pour la lampe Philips Hue. 
-Pourquoi ce choix : autonome (nécessite seulement d'être branché au secteur et d'avoir une connection (filaire ou wifi 
-pour le dernier modèle, filaire pour les versions précédentes), nécessite aucun périphériques, l'utilisateur a juste à
+Pourquoi ce choix : autonome (nÃ©cessite seulement d'Ãªtre branchÃ© au secteur et d'avoir une connection (filaire ou wifi 
+pour le dernier modÃ¨le, filaire pour les versions prÃ©cÃ©dentes), nÃ©cessite aucun pÃ©riphÃ©riques, l'utilisateur a juste Ã 
 le brancher
 
 --Detail :
 
 --Organisation :
-incrémentale car difficile de voir le client (ainsi que le tuteur, mais ça faut pas le dire D: ), donc agile pas possible
-répartition des tâches en fonction de l'avancement de chacun.
+incrÃ©mentale car difficile de voir le client (ainsi que le tuteur, mais Ã§a faut pas le dire D: ), donc agile pas possible
+rÃ©partition des tÃ¢ches en fonction de l'avancement de chacun.
 
 --Conclusions
 
