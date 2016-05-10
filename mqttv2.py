@@ -43,7 +43,7 @@ feedTemp = sense.Feed.retrieve(nodeTemp.subscribes[0].uid)
 while True:
 	temperature = str(feedTemp.events.list(limit=1).objects[0].data.centidegreeCelsius/100)
 	#publication de la temperature sur le serveur mosquitto dans le topic temperature
-	client.publish("temp", "setTemperature -Temp "+temperature+" -l 1")
+	client.publish("temp", "setTemperature -temp "+temperature+" -l 1")
 
 	#attente de 10s avant de republier
 	time.sleep(10)
