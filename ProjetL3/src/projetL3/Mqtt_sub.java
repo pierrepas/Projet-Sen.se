@@ -7,12 +7,18 @@ import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.eclipse.paho.client.mqttv3.MqttSecurityException;
 
+
+/* 
+ * La classe Mqtt_sub se connecte a un client MQTT(mosquitto dans notre cas)
+ * souscrit a un topic MQTT et recupere les messages recus sur ce topic. 
+ */
 public class Mqtt_sub {
-	private String topic;
-	private final static String BROKER_URI = "tcp://localhost:1883";
-	private static MqttClient mqttClient;
-	private static MqttMessage messageMQTT;
+	private String topic; //topic au quel on sera inscrit
+	private final static String BROKER_URI = "tcp://localhost:1883"; //uri du client MQTT
+	private static MqttClient mqttClient; // client mqtt
+	private static MqttMessage messageMQTT; //message recu
 	
+	//getters and setters
 	public MqttMessage getMessageMQTT(){
 		return messageMQTT;
 	}
@@ -33,21 +39,20 @@ public class Mqtt_sub {
 		Mqtt_sub.mqttClient = mqttClient;
 	}
 	
-	public Mqtt_sub () throws MqttSecurityException, MqttException{
-		//this.topic = topic;
+	//constructeur
+	public Mqtt_sub (String topic) throws MqttSecurityException, MqttException{
+		
 		mqttClient = new MqttClient(BROKER_URI,	MqttClient.generateClientId());
-		topic = "temp";
+		this.topic = topic;
 		mqttClient.setCallback(new MqttCallback() {
 
 			@Override
 			public void messageArrived(String topic, MqttMessage message) throws Exception {
 
-				//TODO affichez les messages disponibles sur un topic
+				
 				try {
-//					color = Integer.parseInt(message.toString());
 					messageMQTT = message;
-					//Translator t = new Translator(p,0);
-					//.Translate(message.toString());
+					
 					System.out.println("Message arrived : \"" + message.toString() + "\" on topic \""+ topic +"\"" );
 				}
 				catch (Exception e){
@@ -64,7 +69,6 @@ public class Mqtt_sub {
 
 			@Override
 			public void deliveryComplete(IMqttDeliveryToken arg0) {
-				// TODO Auto-generated method stub
 				try {
 					System.out.println("delivery complete : " + arg0.isComplete());
 				}
@@ -75,8 +79,8 @@ public class Mqtt_sub {
 			}
 			
 		});
+		
 		mqttClient.connect();
-		//TODO souscrivez au topic
 		mqttClient.subscribe(topic);
 		
 		

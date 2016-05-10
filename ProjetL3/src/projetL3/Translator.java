@@ -39,11 +39,8 @@ public class Translator {
 
  
  
-    public List<PhilipsHue> philipsHue;
-    //public Mqtt_pub mqtt_pub ;
-    //public Mqtt_sub mqtt_sub ;
-	//public PhilipsHue philipsHue;
-	public int id;
+    public List<PhilipsHue> philipsHue; //liste des boitiers philips HUE connecté a l'application
+	public int id; // id est le numero du boitier a considerer dans la liste de ponts
     
     
 /*
@@ -51,23 +48,24 @@ public class Translator {
  Le constructeur de la classe   Translator
     
  */ 
-    public Translator(PhilipsHue p,int idd)
-    {
-      this.philipsHue = new ArrayList<PhilipsHue>();
-      //this.mqtt_pub =new Mqtt_pub();
-      //this.mqtt_sub =new Mqtt_sub();
-      this.id  = idd;
-      philipsHue.add(p);
-    }
+   
  
 
   
-    /*
+    public Translator(PhilipsHue p, int idd) {
+    	this.philipsHue = new ArrayList<PhilipsHue>();
+        this.id  = idd;
+        philipsHue.add(p);
+	}
+
+
+
+	/*
     // -l = lampe
 		on change de lampe
 		
     // -i = ip
-		on change de pont 
+		on change l'adresse ip du pont 
 	
     // -c = color
 		on change la couleur en rvb
@@ -88,6 +86,7 @@ public class Translator {
     // 
 	*/
     String lampe = null;
+    String user = null ;
     String ip = null ;
     String color = null;
     String topic = null;
@@ -96,13 +95,10 @@ public class Translator {
     String g = "";
     String b = "";
     String TEMP = null ;
+    Color rgb= null ;
     
     
     void Translate(String msg) throws IOException{
-    Color co = null ;
-    if(!r.isEmpty()&&!g.isEmpty()&&!b.isEmpty())
-        co = new Color(Integer.parseInt(r), Integer.parseInt(g), Integer.parseInt(b));
-    String help= null ;
         
     String indiceUtile[]=new String[msg.split("\\s").length ];
     indiceUtile = msg.split("\\s");
@@ -131,11 +127,14 @@ public class Translator {
             break;    
         case "-t":
             topic =indiceUtile[j+1];
+            break;  
+        case "-u":
+            user =indiceUtile[j+1];
             break;    
         case "-b":
             brightness =indiceUtile[j+1];
             break;    
-        case "-Temp":
+        case "-temp":
             TEMP =indiceUtile[j+1];
             break;    
         case "-rgb":
@@ -149,32 +148,30 @@ public class Translator {
 			tour de boucle : valeur
 			
 			
-			1 - r = 2
-			2 - r = 25
-			3 - r = 255
+			1 - r = 255
+			2 - r = 45
+			3 - r = 65
 			
 			r rencontre un "/" element delimitateur des differentes couleurs on passe donc a l'element suivant G
 			
 			
 			*/
 			
-           switch (indiceUtile[j+1]) {
-			case "red":
-				rgb=Color.red;
-				
-				
-				break;
-			case "blue":
-				rgb=Color.blue ;
-				break ;
-			case "white":
-				rgb=Color.WHITE;
-				break ;
-
-			default:
-				break;
-			}
-                
+            for (int i = 0; i <indiceUtile[j+1].length()  ; i++) {
+                if (indiceUtile[j+1].charAt(i) != '/' ){
+                    if (z==0)
+                        r += indiceUtile[j+1].charAt(i);
+                    if(z==1)
+                        g += indiceUtile[j+1].charAt(i);
+                    if(z==2)
+                        b += indiceUtile[j+1].charAt(i);
+                }
+                else
+                    z++;
+            }
+            
+            rgb=new Color(Integer.parseInt(r),Integer.parseInt(g),Integer.parseInt(b));
+              r="";g="";b="";  
         break;        
         default:
                      
@@ -201,7 +198,7 @@ public class Translator {
         break;    
         case "setHue":
         	  System.out.println("met la couleur "+color+" a la lampe "+ lampe);
-            philipsHue.get(this.id).setHue(Integer.parseInt(color),Integer.parseInt(lampe));
+            this.philipsHue.get(this.id).setHue(Integer.parseInt(color),Integer.parseInt(lampe));
           
          
          
@@ -216,22 +213,25 @@ public class Translator {
         break;
         
         case "setBrightnessAndColor":
-           philipsHue.get(this.id).setBrightnessAndColor(this.id, Integer.parseInt(brightness), Integer.parseInt(lampe));
+           philipsHue.get(this.id).setBrightnessAndColor(Integer.parseInt(color), Integer.parseInt(brightness), Integer.parseInt(lampe));
         break;   
         
         case "connectToLastKnownIP":
-            System.out.println("worked !!");
+           
             philipsHue.get(this.id).connectToLastKnownIP() ;
         break;
         
         case "setRGB":
-            philipsHue.get(this.id).setRGB(Color.BLUE,Integer.parseInt(lampe));
+        	
+            System.out.println(r +" "+ g + " "+ b);
+        	philipsHue.get(this.id).setRGB(rgb,Integer.parseInt(lampe));
         break; 
-        case "changerCouleurSelonTemp" :
-          //  philipsHue.get(this.id).changerCouleurSelonTemp(TEMP,lampe);
+        case "setTemperature" :
+            philipsHue.get(this.id).setTemperature(Integer.parseInt(TEMP),Integer.parseInt(lampe));
+            break ;
         case "connect":
         	
-        	philipsHue.get(this.id).connect("127.0.1.1:80","newdeveloper");
+        	philipsHue.get(this.id).connect(ip,user);
         break ;
         default:
             System.err.println("message invalide ");             

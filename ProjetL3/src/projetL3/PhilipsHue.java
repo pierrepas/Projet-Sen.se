@@ -545,20 +545,19 @@ public class PhilipsHue {
         writeInFile(str, 2);
         return true ;
     }
-    void setTemperature(int temp ,int lampe){
-	if(temp<-5)
-		this.setRGB(Color.blue, lampe);
-	else if  (temp> -5 && temp<= 5){
-		this.setRGB(new Color(0,0,128), lampe);
-		this.setBrightness(30, lampe);}
-	else if (temp >5 && temp<15)
-		this.setRGB(Color.green, lampe);
-	else if (temp > 15 && temp <30)
-		this.setRGB(Color.yellow, lampe);
-	else 
-		this.setRGB(Color.red, lampe);
-	
+    
+	public void setTemperature(int temp, int lampe) {
+		if(temp<-5)
+    		this.setRGB(new Color(0,0,190), lampe);
+    	else if  (temp> -5 && temp<= 5){
+    		this.setRGB(Color.blue, lampe);
+    		this.setBrightness(30, lampe);}
+    	else if (temp >5 && temp<15)
+    		this.setRGB(Color.green, lampe);
+    	else if (temp > 15 && temp <30)
+    		this.setRGB(Color.yellow, lampe);
+    	else 
+    		this.setRGB(Color.red, lampe);
 	}
-
 }
   
